@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,6 +17,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.kokada.shooting.Object.BaseObject;
+import io.kokada.shooting.Object.Bullet;
 import io.kokada.shooting.Object.Doroid;
 import io.kokada.shooting.Object.Missile;
 
@@ -30,7 +32,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private static final int MISSILE_LAUNCH_WEIGHT = 50;
 
     private Doroid doroid;
+    //敵オブジェクト配列
     private final List<BaseObject> missileList = new ArrayList<>();
+    //自機オブジェクト配列
+    private final List<BaseObject> bulletList = new ArrayList<>();
 
     private final Random rand = new Random(System.currentTimeMillis());
 
@@ -131,7 +136,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             Missile missile = launchMissile(width, height);
             missileList.add(missile);
         }
+        //敵オブジェクト描画
         drawObjectList(canvas, missileList, width, height);
+        //自機弾オブジェクト描画
+        drawObjectList(canvas, bulletList, width, height);
 
         doroid.draw(canvas);
 
@@ -157,6 +165,40 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
     }
+
+    /**
+     * 画面タッチ
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                //自機弾発射
+                fire(event.getX(), event.getY());
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    /**
+     * xy座標を元に傾きを計算して自機弾発射
+     * @param x
+     * @param y
+     */
+    private void fire(float x, float y) {
+        float alignX = (x - doroid.rect.centerX()) / (doroid.rect.centerY() - y);
+
+        //自機オブジェクトより下をタッチした場合
+        if (doroid.rect.centerY() - y <= 0) {
+            alignX = -alignX;
+        }
+
+        Bullet bullet = new Bullet(doroid.rect, alignX);
+        bulletList.add(0, bullet);
+    }
+
 
     /**
      *ミサイルの発射位置

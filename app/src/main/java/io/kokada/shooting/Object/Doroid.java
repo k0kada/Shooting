@@ -28,12 +28,13 @@ public class Doroid extends BaseObject {
      * @param height
      */
     public Doroid(Bitmap bitmap, int width, int height) {
+
         this.bitmap = bitmap;
 
         //画面の中央に位置させる
         int left = (width - bitmap.getWidth()) / 2;
         int top = height - bitmap.getHeight();
-        int right = left * bitmap.getWidth();
+        int right = left + bitmap.getWidth();
         int bottom = top + bitmap.getHeight();
         rect = new Rect(left, top, right, bottom);
 
