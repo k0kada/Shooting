@@ -31,7 +31,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     //ミサイル発射の間隔
     private static final int MISSILE_LAUNCH_WEIGHT = 50;
 
-    private Doroid doroid;
+    private static Doroid doroid;
     //敵オブジェクト配列
     private final List<BaseObject> missileList = new ArrayList<>();
     //自機オブジェクト配列
@@ -140,6 +140,30 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         drawObjectList(canvas, missileList, width, height);
         //自機弾オブジェクト描画
         drawObjectList(canvas, bulletList, width, height);
+
+
+        //自機とミサイルが当たったかを判定
+        for (int i = 0; i < missileList.size(); i++) {
+            BaseObject missile = missileList.get(i);
+
+
+            if (doroid.isHit(missile)) {
+                missile.hit();
+                doroid.hit();
+
+                break;
+            }
+
+            //弾とミサイルが当たったかの判定
+            for (int j = 0; j < bulletList.size(); j++) {
+                BaseObject bullet = bulletList.get(j);
+
+                if (bullet.isHit(missile)) {
+                    missile.hit();
+                    bullet.hit();
+                }
+            }
+        }
 
         doroid.draw(canvas);
 

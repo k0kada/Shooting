@@ -43,8 +43,34 @@ public class Doroid extends BaseObject {
         xPosition = rect.centerX();
     }
 
+    /**
+     * 当たったかどうかのタイプを返す
+     * @param object
+     * @return
+     */
+    @Override
+    public boolean isHit(BaseObject object) {
+        if (object.getType() != Type.Missile) {
+            return false;
+        }
+
+        int x = Math.round(object.xPosition);
+        int y = Math.round(object.yPosotion);
+
+        //位置 (x, y) にある点を含むかどうかを判定
+        return  rect.contains(x, y);
+    }
+
+    @Override
+    public Type getType() {
+        return Type.Doroid;
+    }
+
     @Override
     public void draw(Canvas canvas) {
+        if (state != STATE_NORMAL) {
+            return;
+        }
         canvas.drawBitmap(bitmap, rect.left, rect.top, paint);
     }
 
