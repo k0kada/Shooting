@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -31,13 +32,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     //ミサイル発射の間隔
     private static final int MISSILE_LAUNCH_WEIGHT = 50;
 
-    private static Doroid doroid;
+    private static final float SCORE_TEXT_SIZE = 60.f;
+
+    private Doroid doroid;
     //敵オブジェクト配列
     private final List<BaseObject> missileList = new ArrayList<>();
     //自機オブジェクト配列
     private final List<BaseObject> bulletList = new ArrayList<>();
 
     private final Random rand = new Random(System.currentTimeMillis());
+
+    private long score;
+    private final Paint panitScore = new Paint();
 
     private DrawThread drawThread;
 
@@ -114,6 +120,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public GameView(Context context) {
         super(context);
 
+        //スコア
+        panitScore.setColor(Color.BLACK);
+        panitScore.setTextSize(SCORE_TEXT_SIZE);
+        //アンチエイリアス
+        panitScore.setAntiAlias(true);
+
         getHolder().addCallback(this);
     }
 
@@ -161,11 +173,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 if (bullet.isHit(missile)) {
                     missile.hit();
                     bullet.hit();
+                    
+                    score += 10;
                 }
             }
         }
 
         doroid.draw(canvas);
+
+        canvas.drawText("Score:" + score, 0, SCORE_TEXT_SIZE, panitScore);
 
     }
 
